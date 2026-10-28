@@ -1,0 +1,9 @@
+{
+  "name": "iam-vietnamese-curriculum",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {"node": ">=20"},
+  "scripts": {"check:docs": "node tools/check-docs.mjs"},
+  "devDependencies": {"typescript": "5.9.3", "yaml": "2.8.1"}
+}

@@ -1,0 +1,9 @@
+node_modules/
+.validation/
+lab/**/node_modules/
+lab/**/dist/
+lab/**/.env
+lab/.secrets/
+lab/evidence/
+lab/**/coverage/
+*.log
