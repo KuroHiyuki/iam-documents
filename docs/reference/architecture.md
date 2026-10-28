@@ -47,20 +47,20 @@ sequenceDiagram
   participant IAM as Identity
   participant DB as Identity DB
   Browser->>BFF: GET /login
-  BFF->>BFF: state, nonce, verifier; lưu server-side
+  BFF->>BFF: state, nonce, verifier, lưu server-side
   BFF-->>Browser: redirect /oauth2/authorize
   Browser->>IAM: client, redirect, challenge, scopes
   IAM->>DB: tạo authorization request sau validation
   IAM-->>Browser: login / org selection / consent
   Browser->>IAM: interaction có CSRF protection
-  IAM->>DB: kiểm tra membership/app assignment; tạo grant + code
+  IAM->>DB: kiểm tra membership/app assignment, tạo grant + code
   IAM-->>Browser: redirect đã đăng ký + code + state
   Browser->>BFF: callback
   BFF->>BFF: kiểm tra state một lần
   BFF->>IAM: POST token, code, verifier, client authentication
   IAM->>DB: lock code, validate binding, consume và mint trong transaction
   IAM-->>BFF: token response sau commit
-  BFF->>BFF: verify ID token, nonce; lưu token server-side
+  BFF->>BFF: verify ID token, nonce, lưu token server-side
   BFF-->>Browser: cookie phiên mới HttpOnly
 ```
 
