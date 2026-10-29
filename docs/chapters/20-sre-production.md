@@ -44,7 +44,7 @@ Trace một protected request phải thấy đủ đường: Invoice introspect 
 
 ## Bước 2 — SLO và deadline có ngân sách
 
-Chọn SLO end-to-end ban đầu 99,9% trong 30 ngày cho protected requests hợp lệ; error budget tương đương 43 phút 12 giây nếu biểu diễn theo thời gian. Đây là target, không chứng nhận availability. SLI cần phân biệt 401/403 đúng hợp đồng với 5xx/timeout sai trải nghiệm; synthetic flow với credential biết chắc hợp lệ phát hiện lỗi “mọi request đều 401” mà server-error ratio bỏ sót. Track rate limiting của traffic hợp lệ riêng để không giấu overload dưới nhãn client error.
+Chọn SLO end-to-end ban đầu 99,9% trong 30 ngày cho protected requests hợp lệ. Đây là request-based SLI: error budget là 0,1% số request trong phạm vi. Nếu đo time-based availability riêng thì 99,9% của 30 ngày tương đương 43 phút 12 giây downtime; không dùng phép đổi phút đó thay error budget request-based. Đây là target, không chứng nhận availability. SLI cần phân biệt 401/403 đúng hợp đồng với 5xx/timeout sai trải nghiệm; synthetic flow với credential biết chắc hợp lệ phát hiện lỗi “mọi request đều 401” mà server-error ratio bỏ sót. Track rate limiting của traffic hợp lệ riêng để không giấu overload dưới nhãn client error.
 
 Đặt outbound introspection/PDP deadlines theo tổng đường gọi: ví dụ 300 ms mỗi hop quan trọng, budget kiểm tra toàn request tối đa 900 ms, trả 503 trong khoảng một giây khi dependency không phản hồi. Các hop lồng nhau không được mỗi nơi tự chờ một giây rồi làm tổng thành nhiều giây. Truyền deadline còn lại, không retry mặc định trong synchronous auth path; caller có thể retry request idempotent theo nghiệp vụ. Mutation như approve invoice cần idempotency/version, không tự retry sau timeout không biết kết quả.
 

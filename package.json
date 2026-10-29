@@ -4,6 +4,10 @@
   "type": "module",
   "packageManager": "pnpm@10.32.1",
   "engines": {"node": ">=20"},
-  "scripts": {"check:docs": "node tools/check-docs.mjs"},
+  "scripts": {
+    "check:docs": "node tools/check-docs.mjs",
+    "check:powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-powershell.ps1",
+    "check:hcl": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-hcl.ps1"
+  },
   "devDependencies": {"typescript": "5.9.3", "yaml": "2.8.1"}
 }

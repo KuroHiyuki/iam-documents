@@ -4,6 +4,21 @@ Checklist này dùng cùng [chương 20](../chapters/20-sre-production.md), [run
 
 Không cộng điểm trung bình để bù một security gate thất bại. Có thể hoàn thành lab trước production; học xong sách không tự cấp chứng nhận an toàn cho authorization server tự xây.
 
+## 0. Yêu cầu, thiết kế và quy trình giao sản phẩm
+
+Đọc [ma trận đủ 10 nhóm](delivery-coverage.md) và thực hiện [capstone P08](../delivery/08-capstone-lifecycle.md). Các mục sau bổ sung cổng kiến trúc/DevOps trước những gate IAM kỹ thuật bên dưới:
+
+- [ ] Charter, FR/NFR có ID, workload/window, acceptance/test, evidence và owner; assumptions được ghi riêng.
+- [ ] Sơ đồ context/container/sequence, data/trust ownership, capacity/cost/risk register và ADR alternatives đã review.
+- [ ] Git rulesets/CODEOWNERS, required integration/security checks và security findings gate được thử bằng PR negative; fork không nhận secret.
+- [ ] Terraform remote state/lock/KMS/versioning, account guard, reviewed plan, drift và network reachability đã kiểm chứng.
+- [ ] Dev/staging/prod tách identity/issuer/client/keys/data/secret/deployment roles; code và config đều có compatibility evidence.
+- [ ] Build một lần/promote cùng digest; staging sign-off, canary gates có đủ traffic, rollback và schema rollback window đã diễn tập.
+- [ ] Telemetry chạy đủ ingress/dependency/SQL, per-pod scrape và synthetic hợp lệ; missing metrics không bị coi là gate passed.
+- [ ] Cost forecast/tag allocation/budget alert/timebox/cleanup có owner; budget không được hiểu là hard spending cap.
+- [ ] Có on-call/severity/communication, incident/postmortem với corrective action owner/due/test, calendar patch/rotation/restore và onboarding.
+- [ ] Một change có trace từ requirement → reviewed PR → artifact → environment → rollout → incident/recovery → cost/maintenance evidence.
+
 ## 1. Ownership, phạm vi và compatibility
 
 - [ ] Có owner/on-call cho Identity, Authorization, data, platform và incident; recovery operator identity độc lập IAM.

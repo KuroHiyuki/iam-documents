@@ -25,6 +25,14 @@ flowchart LR
 
 Chốt `lab/.node-version` là `24.22.1`, `lab/package.json.packageManager` là `pnpm@10.32.1` theo [versions](../reference/versions.md); commit lockfile. Mọi package có `typecheck` và `build`; không dùng `--if-present` để che package thiếu kiểm tra. Tạo `lab/scripts/ci/verify.ps1`:
 
+Trước đó cài test tooling ở **root lab workspace**, vì config/script integration chạy ở root chứ không phải thư mục service:
+
+```powershell
+pnpm -C lab add --save-exact -Dw vitest@5.0.5 @playwright/test@1.64.1 typescript@5.9.3
+```
+
+Nội dung `verify.ps1`:
+
 ```powershell
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
@@ -51,16 +59,15 @@ Tạo `.github/workflows/lab-ci.yml`. Actions được pin full commit SHA đã 
 name: lab-ci
 on:
   pull_request:
-    paths: ["lab/**", ".github/workflows/lab-ci.yml"]
   push:
     branches: [main]
-    paths: ["lab/**", ".github/workflows/lab-ci.yml"]
 permissions: {contents: read}
 concurrency:
   group: lab-ci-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   verify:
+    name: iam-integration
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     services:
@@ -109,11 +116,11 @@ jobs:
 
 Password trong job là fixture cho service container bị hủy cùng runner, không phải credential IAM hay production secret. Đừng tái sử dụng nó ngoài test. `TEST_DATABASE_URL` là bootstrap DSN; fixture tạo database riêng từng service rồi áp SQL owner tương ứng bằng migration role test. Không chạy mọi schema owner vào cùng namespace và coi đó là isolation test.
 
-Trước production, pin digest ba service images đã kiểm chứng vào manifest versions. PR chỉ sửa Markdown không cần chạy toàn lab; root giáo trình có checker riêng. Branch protection yêu cầu check `lab-ci / verify`; thử một PR cố tình làm replay test fail để chứng minh check thực sự chặn merge. Không dùng `pull_request_target` checkout code không tin cậy rồi trao secret.
+Trước production, pin digest ba service images đã kiểm chứng vào manifest versions. Required check của workflow này là job name `iam-integration`, thống nhất [P02](../delivery/02-git-security-workflow.md); thêm `iam-security` và security findings rule như bài đó. Workflow bắt buộc không dùng paths filter để PR tài liệu không bị treo required check; có thể tối ưu jobs bên trong nhưng aggregate check phải kết thúc rõ. Thử PR cố tình làm replay test fail để chứng minh gate chặn merge. Không dùng `pull_request_target` checkout code không tin cậy rồi trao secret.
 
 ## Bước 3 — Image nhỏ, immutable và build một lần
 
-Tạo `lab/infra/Dockerfile`, build context `lab`. Thêm `.dockerignore` loại `.secrets`, `.env`, evidence, node_modules và Git. Service package khai báo `files:["dist","migrations"]`; entrypoint `src/index.ts` build thành `dist/index.js`. Nếu chương trước dùng tên khác, đổi entrypoint ở package/Dockerfile cùng một commit:
+Tạo `lab/infra/Dockerfile`, build context `lab`. Thêm `.dockerignore` loại `.secrets`, `.env`, evidence, node_modules và Git. Service package khai báo `files:["dist","migrations"]` và script `start:prod` chạy file build thật: Identity chương 03 dùng `node dist/main.js`, BFF chương 09 dùng `node dist/app.js`, service khác dùng entrypoint tương ứng của nó. Script production không yêu cầu file `.env` local vì environment/secrets được runtime inject. Dockerfile dùng chung gọi `npm run start:prod`, không đoán mọi package có `dist/index.js`.
 
 ```dockerfile
 FROM node:24.22.1-bookworm-slim AS build
@@ -130,7 +137,7 @@ ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build --chown=node:node /out/ ./
 USER node
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "start:prod"]
 ```
 
 `--legacy` chọn deployment behavior tương thích workspace hiện tại; nếu chuyển injected workspace packages, thay cấu hình và test deploy artifact thực tế, không chỉ build TypeScript. Password hashing native addon phải build/runtime cùng libc và architecture. Base tag phục vụ bootstrap; release pipeline resolve/pin base digest và lưu provenance, định kỳ rebuild khi base có bản vá. Không COPY private signing key hoặc prod `.env` vào layer rồi xóa ở layer sau.

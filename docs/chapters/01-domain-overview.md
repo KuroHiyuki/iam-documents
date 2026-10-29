@@ -2,6 +2,8 @@
 
 [Trang đầu](../../README.md) · [Tiếp: nền tảng kỹ thuật](02-foundations.md)
 
+Sau phần nhận diện bài toán ở chương này, làm [P01: yêu cầu/NFR và thiết kế](../delivery/01-requirements-solution-design.md) trước implementation. [Ma trận 10 nhóm](../reference/delivery-coverage.md) nối toàn bộ nghiệp vụ IAM với Git, hạ tầng, phát hành, dữ liệu, bảo mật, độ tin cậy và vận hành/chi phí.
+
 ## 1. Mục tiêu và điều kiện đầu vào
 
 Bạn cần biết viết một chương trình đơn giản và dùng terminal. Chưa cần biết OAuth, Docker hoặc microservices. Cuối chương, bạn phải mô tả được hệ thống đang xây phục vụ ai, dữ liệu nào thuộc service nào, điều gì tạo quyền truy cập và bằng chứng nào cho thấy quyền đã bị thu hồi.

@@ -6,7 +6,7 @@
 
 Bạn đã làm demo HTTP ở chương 02. Mục tiêu là tạo **walking skeleton**: một service Express build/test được, có structured logs, readiness, shutdown, dependency nền và HTTPS local. Chưa có endpoint login; trước hết cần một nơi có thể chạy và điều tra lỗi đáng tin cậy.
 
-Mọi lệnh từ thư mục `IAM`, PowerShell. Mỗi code block có nhãn file là nội dung bạn tạo bằng editor; chỉ các khối `powershell` là lệnh terminal. Đọc [implementation map](../reference/implementation-map.md) trước khi đổi tên file/port.
+Mọi lệnh từ root repository giáo trình (`iam-documents`, nơi có README), PowerShell. Mỗi code block có nhãn file là nội dung bạn tạo bằng editor; chỉ các khối `powershell` là lệnh terminal. Đọc [implementation map](../reference/implementation-map.md) trước khi đổi tên file/port.
 
 ## 2. Xác nhận toolchain
 

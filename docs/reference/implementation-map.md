@@ -9,7 +9,9 @@ Repository được bàn giao là **giáo trình**. Người học tạo ứng d
 ```text
 IAM/
   README.md
-  docs/chapters/                  # 20 chương
+  docs/chapters/                  # 20 chương IAM
+  docs/delivery/                  # 8 bài quy trình toàn vòng đời P01–P08
+  docs/templates/                 # charter và NFR register
   docs/reference/                 # hợp đồng, SQL, checklist, runbook
   tools/                         # kiểm tra tài liệu
   lab/                           # người học tạo tại chương 03
@@ -29,7 +31,7 @@ IAM/
     load/
 ```
 
-Lệnh trong sách chạy tại **workspace `IAM`**, trừ khi khối lệnh có `Set-Location lab` hoặc phần mô tả nêu rõ thư mục. Từ chương 03, lệnh pnpm cho ứng dụng dùng `pnpm -C lab ...`. Không chạy lệnh tạo workspace ứng dụng tại root giáo trình.
+Lệnh trong sách chạy tại **root repository giáo trình, hiện là `IAM/iam-documents`**, trừ khi khối lệnh có `Set-Location lab` hoặc phần mô tả nêu rõ thư mục. Từ chương 03, lệnh pnpm cho ứng dụng dùng `pnpm -C lab ...`; tạo package ứng dụng trong `lab/`, giữ package kiểm tra tài liệu tại root. Nếu thực hành ở repository khác, xem [quy ước thư mục và learning path](delivery-coverage.md).
 
 ## 2. Ports và TLS local
 

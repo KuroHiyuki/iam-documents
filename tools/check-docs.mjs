@@ -6,7 +6,7 @@ import YAML from 'yaml';
 
 const root = path.resolve(import.meta.dirname, '..');
 const failures = [];
-const counts = {documents: 0, localLinks: 0, fences: 0, json: 0, yaml: 0, typescript: 0, powershell: 0};
+const counts = {documents: 0, chapters:0, deliveryLessons:0, localLinks: 0, fences: 0, json: 0, yaml: 0, typescript: 0, powershell: 0};
 async function walk(dir) {
   const result = [];
   for (const item of await readdir(dir, {withFileTypes: true})) {
@@ -20,9 +20,16 @@ async function walk(dir) {
 function fail(file, line, message) { failures.push(`${path.relative(root, file)}:${line}: ${message}`); }
 const documents = await walk(root);
 const chapters = documents.filter(p => p.includes(`${path.sep}chapters${path.sep}`));
+const delivery = documents.filter(p => p.includes(`${path.sep}delivery${path.sep}`));
+counts.chapters=chapters.length;
+counts.deliveryLessons=delivery.length;
 const chapterNumbers = chapters.map(p => Number(path.basename(p).slice(0,2))).sort((a,b)=>a-b);
 if (JSON.stringify(chapterNumbers) !== JSON.stringify(Array.from({length:20},(_,i)=>i+1))) {
   failures.push('Expected exactly chapters 01–20 with unique numbers');
+}
+const deliveryNumbers=delivery.map(p=>Number(path.basename(p).slice(0,2))).sort((a,b)=>a-b);
+if (JSON.stringify(deliveryNumbers)!==JSON.stringify(Array.from({length:8},(_,i)=>i+1))) {
+  failures.push('Expected exactly delivery lessons P01–P08 with unique numbers');
 }
 for (const file of documents) {
   counts.documents++;
@@ -73,7 +80,7 @@ for (const file of documents) {
     if (target!==root && !target.startsWith(root+path.sep)) { fail(file,1,`Link escapes curriculum: ${href}`); continue; }
     try { await stat(target); } catch { fail(file,1,`Missing local link: ${href}`); }
   }
-  if (file.includes(`${path.sep}chapters${path.sep}`)) {
+  if (file.includes(`${path.sep}chapters${path.sep}`)||file.includes(`${path.sep}delivery${path.sep}`)) {
     const sections = [
       ['entry/prerequisites', /điều kiện|prerequisite|đầu vào/i],
       ['commands/code', /(?:```|~~~)(?:powershell|ps1|typescript|ts|sql|javascript|bash|yaml|json|text)/],
@@ -85,5 +92,13 @@ for (const file of documents) {
     for (const [label, pattern] of sections) if (!pattern.test(raw)) fail(file,1,`Missing chapter element: ${label}`);
   }
 }
+const nfr=await readFile(path.join(root,'docs/templates/nfr-register.csv'),'utf8');
+const nfrRows=nfr.trim().split(/\r?\n/);
+const expectedHeader='id,category,target,workload_or_scope,verification,evidence,owner,status';
+if(nfrRows[0]!==expectedHeader)failures.push('NFR register header is missing required traceability fields');
+const ids=nfrRows.slice(1).map(line=>line.split(',')[0]);
+if(ids.length!==8||new Set(ids).size!==8||ids.some((id,i)=>id!==`NFR-${String(i+1).padStart(2,'0')}`))
+  failures.push('NFR register must contain unique NFR-01 through NFR-08');
+for(const row of nfrRows.slice(1))if(row.split(',').length!==8)failures.push('NFR template contains malformed column count');
 console.log(JSON.stringify({node:process.version,counts, failures},null,2));
 process.exitCode = failures.length ? 1 : 0;

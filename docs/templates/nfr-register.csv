@@ -1,0 +1,9 @@
+id,category,target,workload_or_scope,verification,evidence,owner,status
+NFR-01,availability,99.9 percent valid protected requests over 30 days,edge plus synthetic valid auth,SLO dashboard and synthetic test,pending,service owner,pending
+NFR-02,performance,introspection p95 50ms and protected API p95 150ms,100 RPS 15 minutes 10k users 100 orgs 20k memberships,k6 and raw results,pending,application owner,pending
+NFR-03,security durability,no acknowledged revoke lost or keep recovery closed,primary failover,revoke barrier failover introspection check,pending,data and identity owner,pending
+NFR-04,disaster recovery,RPO 5 minutes RTO 60 minutes initial learning target,isolated restore with security reconciliation,encrypted backup PITR restore drill,pending,data owner,pending
+NFR-05,resilience,no single app pod dependency with real failure domains,production topology,pod node zone failure drill,pending,platform owner,pending
+NFR-06,cost,forecast and owner plus expiry before cloud apply,selected account region and lab timebox,calculator Terraform inventory budget alert cleanup,pending,cost owner,pending
+NFR-07,security,no secrets or PII in Git logs metrics and artifacts,all services pipelines and telemetry,secret scan redaction tests TLS checks,pending,security owner,pending
+NFR-08,operability,critical alerts have owner runbook and tested recovery,services dependencies and data,game day rollback restore incident exercise,pending,on-call owner,pending
